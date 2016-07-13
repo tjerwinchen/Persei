@@ -31,14 +31,14 @@ class ViewController: UITableViewController {
         self.menu = menu
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         print(imageView.bounds.size)
     }
     
     // MARK: - Items
-    private let items = (0..<7 as Range).map {
+    private let items = (0..<7).map {
         MenuItem(image: UIImage(named: "menu_icon_\($0)")!)
     }
     
@@ -51,7 +51,7 @@ class ViewController: UITableViewController {
                 let center: CGPoint = {
                     let itemFrame = self.menu.frameOfItemAtIndex(self.menu.selectedIndex!)
                     let itemCenter = CGPoint(x: itemFrame.midX, y: itemFrame.midY)
-                    var convertedCenter = self.imageView.convertPoint(itemCenter, fromView: self.menu)
+                    var convertedCenter = self.imageView.convert(itemCenter, from: self.menu)
                     convertedCenter.y = 0
 
                     return convertedCenter
@@ -74,7 +74,7 @@ class ViewController: UITableViewController {
 
 // MARK: - MenuViewDelegate
 extension ViewController: MenuViewDelegate {
-    func menu(menu: MenuView, didSelectItemAtIndex index: Int) {
+    func menu(_ menu: MenuView, didSelectItemAtIndex index: Int) {
         model = model.next()
     }
 }

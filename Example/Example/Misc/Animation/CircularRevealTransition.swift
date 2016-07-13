@@ -2,27 +2,27 @@
 
 import QuartzCore
 
-class CircularRevealTransition {
+class CircularRevealTransition: NSObject, CAAnimationDelegate {
     var completion: () -> Void = {}
 
-    private let layer: CALayer
-    private let snapshotLayer: CALayer
-    private let mask: CAShapeLayer
-    private let animation: CABasicAnimation
+    private var layer: CALayer
+    private var snapshotLayer = CALayer()
+    private var mask = CAShapeLayer()
+    private var animation = CABasicAnimation(keyPath: "path")
     
     // MARK: - Init
     init(layer: CALayer, center: CGPoint, startRadius: CGFloat, endRadius: CGFloat) {
-        let startPath = CGPathCreateWithEllipseInRect(CGRect(boundingCenter: center, radius: startRadius), nil)
-        let endPath = CGPathCreateWithEllipseInRect(CGRect(boundingCenter: center, radius: endRadius), nil)
-
         self.layer = layer
-        snapshotLayer = CALayer()
+
+        super.init()
+
+        let startPath = CGPath(ellipseIn: CGRect(boundingCenter: center, radius: startRadius), transform: nil)
+        let endPath = CGPath(ellipseIn: CGRect(boundingCenter: center, radius: endRadius), transform: nil)
+
         snapshotLayer.contents = layer.contents
     
-        mask = CAShapeLayer()
         mask.path = endPath
-
-        animation = CABasicAnimation(keyPath: "path")
+        
         animation.duration = 0.6
         animation.fromValue = startPath
         animation.toValue = endPath
@@ -49,12 +49,12 @@ class CircularRevealTransition {
         layer.mask = mask
         mask.frame = layer.bounds
 
-        mask.addAnimation(animation, forKey: "reveal")
+        mask.add(animation, forKey: "reveal")
     }
     
     // MARK: - CAAnimationDelegate
     @objc
-    private func animationDidStop(_: CAAnimation, finished: Bool) {
+    internal func animationDidStop(_: CAAnimation, finished: Bool) {
         layer.mask = nil
         snapshotLayer.removeFromSuperlayer()
         

@@ -23,18 +23,18 @@ public class MenuView: StickyHeaderView {
     // MARK: - FlowLayout
     private lazy var collectionLayout: UICollectionViewFlowLayout = { [unowned self] in
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .Horizontal
+        layout.scrollDirection = .horizontal
         
         return layout
     }()
     
     // MARK: - CollectionView
     private lazy var collectionView: UICollectionView = { [unowned self] in
-        let view = UICollectionView(frame: CGRectZero, collectionViewLayout: self.collectionLayout)
+        let view = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.collectionLayout)
         view.clipsToBounds = false
-        view.backgroundColor = UIColor.clearColor()
+        view.backgroundColor = UIColor.clear()
         view.showsHorizontalScrollIndicator = false
-        view.registerClass(MenuCell.self, forCellWithReuseIdentifier: CellIdentifier)
+        view.register(MenuCell.self, forCellWithReuseIdentifier: CellIdentifier)
 
         view.delegate = self
         view.dataSource = self
@@ -58,14 +58,14 @@ public class MenuView: StickyHeaderView {
 
     public var selectedIndex: Int? = 0 {
         didSet {
-            var indexPath: NSIndexPath?
+            var indexPath: IndexPath?
             if let index = self.selectedIndex {
-                indexPath = NSIndexPath(forItem: index, inSection: 0)
+                indexPath = IndexPath(item: index, section: 0)
             }
             
-            self.collectionView.selectItemAtIndexPath(indexPath,
+            self.collectionView.selectItem(at: indexPath,
                 animated: self.revealed,
-                scrollPosition: .CenteredHorizontally
+                scrollPosition: .centeredHorizontally
             )
         }
     }
@@ -90,38 +90,38 @@ public class MenuView: StickyHeaderView {
 }
 
 extension MenuView {
-    public func frameOfItemAtIndex(index: Int) -> CGRect {
-        let indexPath = NSIndexPath(forItem: index, inSection: 0)
-        let layoutAttributes = collectionLayout.layoutAttributesForItemAtIndexPath(indexPath)!
+    public func frameOfItemAtIndex(_ index: Int) -> CGRect {
+        let indexPath = IndexPath(item: index, section: 0)
+        let layoutAttributes = collectionLayout.layoutAttributesForItem(at: indexPath)!
         
-        return self.convertRect(layoutAttributes.frame, fromView: collectionLayout.collectionView)
+        return self.convert(layoutAttributes.frame, from: collectionLayout.collectionView)
     }
 }
 
 extension MenuView: UICollectionViewDataSource {
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
     
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(
-            CellIdentifier,
-            forIndexPath: indexPath
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: CellIdentifier,
+            for: indexPath
         ) as? MenuCell
 
         // compatibility with Swift 1.1 & 1.2
-        cell?.object = items[indexPath.item]
+        cell?.object = items[(indexPath as NSIndexPath).item]
         
         return cell!
     }
 }
 
 extension MenuView: UICollectionViewDelegate {
-    public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        selectedIndex = indexPath.item
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedIndex = (indexPath as NSIndexPath).item
         delegate?.menu(self, didSelectItemAtIndex: selectedIndex!)
         
-        UIView.animateWithDuration(0.2, delay: 0.4, options: [], animations: {
+        UIView.animate(withDuration: 0.2, delay: 0.4, options: [], animations: {
             self.revealed = false
         }, completion: nil)
     }
